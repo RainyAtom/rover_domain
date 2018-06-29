@@ -15,13 +15,10 @@ def main():
     config_f = input("Enter Configuration File Name for Testing: ")
 
     # Read and store parameters from configuration file.
-<<<<<<< HEAD
-=======
     if len(sys.argv) is 1:
         config_f = "config.yml"
     else:
         config_f = sys.argv[1]
->>>>>>> issues
     with open(config_f, 'r') as f:
         config_file = yaml.load(f)
 
