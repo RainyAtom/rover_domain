@@ -7,5 +7,6 @@ World Width: 30
 World Length: 30
 Coupling: 1
 Observation Radius: 3.0
+Consideration Radius: 10.0
 Minimum Distance: 1.0
 Steps: 100
