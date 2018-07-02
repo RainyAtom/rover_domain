@@ -22,7 +22,7 @@ def cf(domain_state, agent_info, coupling = 1, consideration_radius = 10.0):
         dist = distance(agent_info['loc'], poi_info['loc'])
         # If the distance between the agent and poi is less than the consideration radius, store the POI location
         if dist <= consideration_radius:
-            # NOT SURE IF RETURNING RIGHT THING
+            # NOT SURE IF RIGHT THING
             poi_locations.append(poi_info)
 
     # list of POI locations that with an additional agent increase the reward
