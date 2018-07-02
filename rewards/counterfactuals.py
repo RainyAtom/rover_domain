@@ -1,20 +1,32 @@
 from math import sqrt
 
 # Assumes that given domain state is at a specified time step and specific agent id and location is given
+# HOW WILL THE DOMAIN STATE BE GIVEN?
 def cf(domain_state, agent, coupling = 1, consideration_radius = 10.0):
     """
     Implement counterfactual and return new state of the domain
     :param domain_state: current state of the domain
     :param agent: agent considering counterfactual agents
-    :param coupling: the number of agents that must observe POIs before it is counted
+    :param coupling: the number of agents that must observe POIs for max reward
     :param consideration_radius: the maximum distance from an agent POIs must be to have a counterfactual agent added
     :returns: domain state with counterfactual implemented
     """
     # Copy of domain to be modified
     new_domain_state = domain_state
+    # list of POI locations in range of agent
+    poi_locations = []
+    agent_loc = agent
 
+    # could do it as shown below or tap into agents sensors and search radius from there??
+    # For every POI, determine if it is within range of the agent
+    for poi_loc in domain_state:
+        dist = distance(agent_loc, poi_loc)
+        # If the distance between the agent and poi is less than the consideration radius, store the POI location
+        if dist <= consideration_radius:
+            poi_locations.append(poi_loc)
+
+    # list of POI locations that with an additional agent increase the reward
     poi_considered = []
-    poi_locations = poi_search(domain_state, agent, consideration_radius)
 
     # Calculate D++ -1
     agent_diff =
@@ -37,29 +49,6 @@ def cf(domain_state, agent, coupling = 1, consideration_radius = 10.0):
     return new_domain_state
 
 
-def poi_search(domain_state, agent, consideration_radius):
-    """
-    Search for POIs within range of the agents and return list containing the location of each POI
-    :param domain_state: current state of the domain
-    :param agent: agent searching for POIs around it
-    :param consideration_radius: the maximum distance an agent must search for POIs to place additional agents at
-    :returns: list of poi locations
-    """
-    poi_locations = []
-    agent_loc = agent
-
-    # could do it as shown below or tap into agents sensors and search radius from there
-    # For every POI, determine if it is within range of the agent
-    for poi_loc in domain_state:
-        dist = distance(agent_loc, poi_loc)
-
-        # If the distance between the agent and poi is less than the consideration radius, store the POI location
-        if dist <= consideration_radius:
-            poi_locations.append(poi_loc)
-
-    return poi_locations
-
-
 # Function taken from g.py
 def distance(loc_1, loc_2):
     """ distance MOVE TO UTILITY CLASS
@@ -69,14 +58,13 @@ def distance(loc_1, loc_2):
     vectors.
     """
     square = lambda x: x ** 2
-
     return sqrt(square(loc_1[0] - loc_2[0]) + square(loc_1[1] - loc_2[1]))
 
 
 def cf_d(domain_state, poi_locations):
     """
     Calculate D++ with additional agents placed at specified POIs
-    :param domain_state: domain to modify
+    :param domain_state: domain state to modify
     :param poi_locations: pois to place additional agents at
     :returns:
     """
