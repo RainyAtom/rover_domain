@@ -2,7 +2,7 @@ from math import sqrt
 
 # Assumes that given domain state is at a specified time step and specific agent id and location is given
 # HOW WILL THE DOMAIN STATE BE GIVEN?
-def cf(domain_state, agent, coupling = 1, consideration_radius = 10.0):
+def cf(domain_state, agent_info, coupling = 1, consideration_radius = 10.0):
     """
     Implement counterfactual and return new state of the domain
     :param domain_state: current state of the domain
@@ -15,15 +15,15 @@ def cf(domain_state, agent, coupling = 1, consideration_radius = 10.0):
     new_domain_state = domain_state
     # list of POI locations in range of agent
     poi_locations = []
-    agent_loc = agent
 
     # could do it as shown below or tap into agents sensors and search radius from there??
     # For every POI, determine if it is within range of the agent
-    for poi_loc in domain_state:
-        dist = distance(agent_loc, poi_loc)
+    for poi_id, poi_info in domain_state['pois'].items():
+        dist = distance(agent_info['loc'], poi_info['loc'])
         # If the distance between the agent and poi is less than the consideration radius, store the POI location
         if dist <= consideration_radius:
-            poi_locations.append(poi_loc)
+            # NOT SURE IF RETURNING RIGHT THING
+            poi_locations.append(poi_info)
 
     # list of POI locations that with an additional agent increase the reward
     poi_considered = []
