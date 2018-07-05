@@ -6,16 +6,14 @@ import yaml
 import sys
 
 
-def main():
+def main(config_f):
     """ main
 
         This function contains the initial trial to run the rover domain.
     """
     # Read and store parameters from configuration file.
-    if len(sys.argv) is 1:
+    if config_f is None:
         config_f = "config.yml"
-    else:
-        config_f = sys.argv[1]
     with open(config_f, 'r') as f:
         config_file = yaml.load(f)
 
@@ -63,6 +61,13 @@ def main():
         global_reward.accept_jointstate(joint_state)
         reward_G = global_reward.calculate_reward()
 
+    # Return name of configuration file and the global reward resulted from the parameters used
+    return {config_f: reward_G}
 
 if __name__ == '__main__':
-    main()
+    # When ran through command line and no specific file is indicated, use default configuration file
+    if len(sys.argv) is 1:
+        config_f = "config.yml"
+    else:
+        config_f = sys.argv[1]
+    main(config_f)
