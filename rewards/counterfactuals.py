@@ -1,6 +1,6 @@
 from math import sqrt
 
-def cf(domain_state, agent, coupling = 1, consideration_radius = 10.0):
+def cf(domain_state, agent, coupling = 1, consideration_radius = 5.0):
     """
     Implement counterfactual and return new state of the domain
     :param domain_state: current state of the domain
