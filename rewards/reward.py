@@ -19,13 +19,13 @@ class Reward(object):
         """ Initializes the reward.
 
         Initialization may involve connecting to a queue or message
-        passing system, in which case accept_jointstate will be the queue
+        passing system, in which case record_history will be the queue
         consumer.
         """
-        pass
+        self.history = []
 
-    def accept_jointstate(self, jointstate):
-        """ accept_jointstate
+    def record_history(self, jointstate):
+        """ record_history
 
         Reads in a jointstate to calculate the reward. Repeated application of
         this function gives Reward all information needed to calculate the
@@ -35,7 +35,7 @@ class Reward(object):
         needed to calculate the reward (possibly with history).
         :returns: Nothing
         """
-        pass
+        self.history.append(jointstate)
 
     def calculate_reward(self):
         """ calculate_reward
@@ -52,4 +52,4 @@ class Reward(object):
 
         :returns: Nothing
         """
-        pass
+        self.history = []
