@@ -28,7 +28,7 @@ def EvaluateTeam(team, domain, reward, steps):
     print("Reward: ", reward_G)
     return team, domain, reward_G
 
-def main():
+def main(config_f):
     """
     """
     # Read and store parameters from configuration file.
@@ -64,7 +64,7 @@ def main():
         CCEA(team, fitness)
 
     # Return name of configuration file and the global reward resulted from the parameters used
-    return {config_f: reward_G}
+    return {config_f: fitness}
 
 if __name__ == '__main__':
     # When ran through command line and no specific file is indicated, use default configuration file
