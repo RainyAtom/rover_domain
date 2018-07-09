@@ -7,7 +7,7 @@ LICENSE GOES HERE
 from math import sqrt
 from heapq import heappush, heappop
 import numpy as np
-from reward import Reward
+from rewards.reward import Reward
 
 
 class GlobalReward(Reward):
@@ -18,6 +18,12 @@ class GlobalReward(Reward):
     of all agents. Reward is the scales value of the observed POIs.
 
     Equation goes here once final one decided.
+    :param coupling: the number of agents that must observe a POI before it is counted
+    :param observation_radius: how close an agent must be for an observation to count
+    :param min_dist: the minimum distance between an agent and POI, 
+    if an agent is closer than min_dist, we count it as though it were min_dist away
+
+    Note: Check if the above description is correct
     """
     def __init__(self, coupling=1, observation_radius=4.0, min_dist=1.0):
         super(GlobalReward, self).__init__()
@@ -25,11 +31,6 @@ class GlobalReward(Reward):
         self.coupling = coupling
         self.observation_radius = observation_radius
         self.min_dist = min_dist
-
-    def accept_jointstate(self, jointstate):
-        """ accept_jointstate
-        """
-        self.history.append(jointstate)
 
     def calculate_reward(self):
         """ calculate_reward
@@ -39,6 +40,17 @@ class GlobalReward(Reward):
             raise "No history yet. Cannot determine vector size."
 
         poi_reward = {}
+
+        # for each time step, check to see if there are any agents 
+        # within observation_radius of each POI
+        #
+        # If there are more than coupling agents within range,
+        # compute the POI reward for that time step by 
+        # taking POI value/average distance away of each agent
+        #
+        # The overall reward from that POI is the maximum reward that has been
+        # achieved over all time steps.
+        
         for timestep in self.history:
             for poi_id, poi_info in timestep['pois'].items():
                 poi_obs = []
@@ -56,13 +68,11 @@ class GlobalReward(Reward):
 
         g_reward = sum([r for _, r in poi_reward.items()])
 
+        # Since this is global reward, all agents get the same reward
         for agent_id in self.history[0]['agents']:
             reward[agent_id] = g_reward
 
         return reward
-
-    def clear(self):
-        self.history = []
 
     @staticmethod
     def distance(loc_1, loc_2):

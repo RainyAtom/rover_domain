@@ -7,7 +7,7 @@ LICENSE GOES HERE
 import math
 import random
 import sys
-from simulator import Simulator
+from simulators.simulator import Simulator
 
 class RoverDomain(Simulator):
     """ Rover Domain
@@ -17,7 +17,7 @@ class RoverDomain(Simulator):
     """
     def __init__(self, seed=None, initial_poi_locs=None,
                  initial_agent_poses=None, number_agents=1,
-                 number_pois=1, world_width=30):
+                 number_pois=1, world_width=30, world_length=30):
         """ Create rover domain.
         If seed is passed, will initialize randomly. Otherwise, will initialize
         according to passed starting positions.
@@ -34,18 +34,37 @@ class RoverDomain(Simulator):
         initialized randomly. And agent pose is [(x,y), theta].
         :param number_agents: The number of rovers in the domain. Default is 1.
         :param number_pois: The number of pois in the domain. Default is 1.
-        :param world_width: The length and width of the square rover domain.
+        :param world_width: The width of the rover domain.
+        :param world_length: The length of the rover domain.
         """
         super(RoverDomain, self).__init__()
 
         self.number_agents = number_agents
         self.number_pois = number_pois
         self.world_width = world_width
+        self.world_length = world_length
+
+        # Check if initial poi and agent locations are within world bounds.
+        # Assumes locations inputted are all either randomized or specified.
+        if initial_poi_locs is not None:
+            for loc in range(self.number_pois):
+                if initial_poi_locs[loc][0] < 0 or initial_poi_locs[loc][0] > self.world_width or \
+                   initial_poi_locs[loc][1] < 0 or initial_poi_locs[loc][1] > self.world_length:
+                    print("POI " + str(loc) + " Location is Out of World Bounds")
+                    exit()
+        if initial_agent_poses is not None:
+            for pos in range(self.number_agents):
+                if initial_agent_poses[pos][0] < 0 or initial_agent_poses[pos][0] > self.world_width or \
+                   initial_agent_poses[pos][1] < 0 or initial_agent_poses[pos][1] > self.world_length:
+                    print("Agent " + str(pos) + " Location is Out of World Bounds")
+                    exit()
 
         self.initial_vals = (initial_poi_locs, initial_agent_poses)
-
         self.seed_random(seed)
         self.initialize()
+    
+    def __repr__(self):
+        return "POI: {0!r} Rovers: {1!r}".format(self.pois, self.agents)
 
     def reset(self):
         """ reset
@@ -71,15 +90,35 @@ class RoverDomain(Simulator):
         :param actions: dictionary mapping agent_id (same key as
         self.agent_poses) and [dx, dy]
         """
-        for agent_id, action in actions:
+
+        # unwrap agents dictionary
+        actions = actions['agents']
+
+        for agent_id, action in actions.items():
             loc = self.agents[agent_id]['loc']
-            loc = (loc[0] + action[0], loc[1] + action[1])
-            theta = math.atan2(action[1] / action[0])
-            self.agents[agent_id] = {'loc' : loc, 'theta' : theta}
+
+            # Check if action moves agent within the world bounds.
+            if loc[0] + action[0] < 0:
+                x = 0
+            elif loc[0] + action[0] > self.world_width:
+                x = self.world_width
+            else:
+                x = loc[0] + action[0]
+
+            if loc[1] + action[1] < 0:
+                y = 0
+            elif loc[1] + action[1] > self.world_length:
+                y = self.world_length
+            else:
+                y = loc[1] + action[1]
+
+            loc = (x, y)
+            theta = math.atan2(action[1], action[0])
+            self.agents[agent_id] = {'loc': loc, 'theta': theta}
 
 
-    def update_jointstate(self):
-        return {"agents" : self.agents, "pois" : self.pois}
+    def get_jointstate(self):
+        return {"agents": self.agents, "pois": self.pois}
 
     def initialize(self):
         """ initialize
@@ -149,4 +188,4 @@ class RoverDomain(Simulator):
         Returns a random location within the bounds of the world
         """
         return [random.uniform(0, self.world_width),
-                random.uniform(0, self.world_width)]
+                random.uniform(0, self.world_length)]

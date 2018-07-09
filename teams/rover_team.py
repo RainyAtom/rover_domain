@@ -9,7 +9,7 @@ LICENSE GOES HERE
 
 from math import cos, sin, sqrt
 import numpy as np
-from team import Team
+from teams.team import Team
 
 class RoverTeam(Team):
     """ RoverTeam
@@ -18,16 +18,14 @@ class RoverTeam(Team):
     combines the agent outputs into a (global frame) joint action.
     """
 
-    def __init__(self, agent_policies, use_distance=True):
+    def __init__(self, agent_policies):
         """ __init__
         :param agent_policies: dictionary keyed by agent id of functions that
         take a numpy array and return a dx, dy vector
-        :param use_distance: whether the quadrant vector formulation of the
-        input scales values based on distance, or if it is just a count
         """
         super(RoverTeam, self).__init__()
         self.agent_policies = agent_policies
-        self.use_distance = use_distance
+        self.num_agents = len(self.agent_policies)
 
     def get_jointaction(self, jointstate):
         """ get_jointaction
@@ -47,8 +45,8 @@ class RoverTeam(Team):
         for agent_id, info in agents.items():
             w2a, a2w = self.get_transforms(info)
             obs = self.get_agent_observation(jointstate, agent_id, w2a)
-            action = self.agent_policies[agent_id](obs)
-            dx_a, dy_a = action
+            action = self.agent_policies[agent_id].get_next(obs)
+            dx_a, dy_a = action[0].item(), action[1].item()
             actions[agent_id] = a2w(dx_a, dy_a)
 
         return {'agents' : actions}
@@ -98,16 +96,12 @@ class RoverTeam(Team):
         (in agent frame) of pois and agents.
         """
         agent_obs = np.zeros(8)
-
-        if self.use_distance:
-            agent_loc = jointstate['agents'][agent_id]['loc']
+        agent_loc = jointstate['agents'][agent_id]['loc']
 
         for _, poi in jointstate['pois'].items():
             new_loc = world_to_agent(*poi['loc'])
             quad = self.get_quad(new_loc)
-            increment = poi['value']
-            if self.use_distance:
-                increment /= self.distance(poi['loc'], agent_loc)
+            increment = poi['value'] / max(self.distance(poi['loc'], agent_loc), 0.01)
             agent_obs[quad] += increment
 
         for other_id, agent in jointstate['agents'].items():
@@ -115,9 +109,7 @@ class RoverTeam(Team):
                 continue
             new_loc = world_to_agent(*agent['loc'])
             quad = self.get_quad(new_loc)
-            increment = 1
-            if self.use_distance:
-                increment /= self.distance(agent['loc'], agent_loc)
+            increment = 1 / max(self.distance(agent['loc'], agent_loc), 0.01)
             agent_obs[quad + 4] += increment
 
         return agent_obs
