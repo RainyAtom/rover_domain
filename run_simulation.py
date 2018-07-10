@@ -25,8 +25,8 @@ def EvaluateTeam(team, domain, reward, steps):
 
     # Compute the Global Reward
     reward_G = reward.calculate_reward()
-    # print("Reward: ", reward_G)
-    # print()
+    print("Reward: ", reward_G)
+    print()
     return team, domain, reward_G
 
 def main(config_f):
@@ -64,7 +64,6 @@ def main(config_f):
 
     for generation in range(config["Epochs"]):
         team, domain, fitness = EvaluateTeam(team, domain, global_reward, config["Steps"])
-        print(fitness['agent_0'])
         # CCEA Evaluation
         CCEA(team, fitness)
 
