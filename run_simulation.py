@@ -25,7 +25,8 @@ def EvaluateTeam(team, domain, reward, steps):
 
     # Compute the Global Reward
     reward_G = reward.calculate_reward()
-    print("Reward: ", reward_G)
+    # print("Reward: ", reward_G)
+    # print()
     return team, domain, reward_G
 
 def main(config_f):
@@ -58,13 +59,18 @@ def main(config_f):
         config["Observation Radius"],
         config["Minimum Distance"])
 
+    gen_reward = []
     for generation in range(config["Epochs"]):
         team, domain, fitness = EvaluateTeam(team, domain, global_reward, config["Steps"])
+        # Store the global reward for each generation in a list
+        gen_reward.append(fitness['agent_0'])
         # CCEA Evaluation
         CCEA(team, fitness)
 
-    # Return name of configuration file and the global reward resulted from the parameters used
-    return {config_f: fitness}
+    # Print configuration file name and the global reward for each generation
+    print()
+    print({config_f: gen_reward})
+
 
 if __name__ == '__main__':
     # When ran through command line and no specific file is indicated, use default configuration file
