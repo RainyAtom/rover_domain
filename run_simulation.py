@@ -38,6 +38,9 @@ def main(config_f):
     with open(config_f, 'r') as f:
         config = yaml.load(f)
 
+    print()
+    print(config_f)
+
     # Initialize the rover domain.
     domain = RoverDomain(
         config["Seed"],
@@ -59,17 +62,11 @@ def main(config_f):
         config["Observation Radius"],
         config["Minimum Distance"])
 
-    gen_reward = []
     for generation in range(config["Epochs"]):
         team, domain, fitness = EvaluateTeam(team, domain, global_reward, config["Steps"])
-        # Store the global reward for each generation in a list
-        gen_reward.append(fitness['agent_0'])
+        print(fitness['agent_0'])
         # CCEA Evaluation
         CCEA(team, fitness)
-
-    # Print configuration file name and the global reward for each generation
-    print()
-    print({config_f: gen_reward})
 
 
 if __name__ == '__main__':
