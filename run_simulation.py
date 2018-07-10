@@ -25,10 +25,11 @@ def EvaluateTeam(team, domain, reward, steps):
 
     # Compute the Global Reward
     reward_G = reward.calculate_reward()
-    print("Reward: ", reward_G)
+    # print("Reward: ", reward_G)
+    # print()
     return team, domain, reward_G
 
-def main():
+def main(config_f):
     """
     """
     # Read and store parameters from configuration file.
@@ -36,6 +37,9 @@ def main():
         config_f = "config.yml"
     with open(config_f, 'r') as f:
         config = yaml.load(f)
+
+    print()
+    print(config_f)
 
     # Initialize the rover domain.
     domain = RoverDomain(
@@ -60,11 +64,10 @@ def main():
 
     for generation in range(config["Epochs"]):
         team, domain, fitness = EvaluateTeam(team, domain, global_reward, config["Steps"])
+        print(fitness['agent_0'])
         # CCEA Evaluation
         CCEA(team, fitness)
 
-    # Return name of configuration file and the global reward resulted from the parameters used
-    return {config_f: reward_G}
 
 if __name__ == '__main__':
     # When ran through command line and no specific file is indicated, use default configuration file

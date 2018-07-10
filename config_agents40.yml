@@ -1,0 +1,14 @@
+Seed: 1
+Initial POI Locations: null
+Initial Agent Positions: null
+Number of Agents: 40
+Number of POIs: 25
+World Width: 50
+World Length: 50
+Coupling: 2
+Observation Radius: 5.0
+Consideration Radius: 5.0
+Minimum Distance: 1.0
+Steps: 100
+Epochs: 10000
+
