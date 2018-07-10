@@ -1,8 +1,7 @@
 from run_simulation import main
-from simulators.rover_domain_simulator import RoverDomain
+# from simulators.rover_domain_simulator import RoverDomain
 
-
-class TestClass(RoverDomain):
+class TestClass():
     def test_config(self):
         main("config.yml")
 
