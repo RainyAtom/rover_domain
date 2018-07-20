@@ -29,7 +29,7 @@ def cf(domain_state, agent_id, agent_info, coupling=1, consideration_radius=5.0)
     if len(considered_poi) is 0:
         return domain_state
 
-    # list of POIs that with an additional agent that could increase reward
+    # list of POIs that with an additional agent could increase reward
     cf_poi = []
     # Calculate difference reward
     agent_diff = DifferenceReward.calculate_reward(domain_state, agent_id)
