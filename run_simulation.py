@@ -60,6 +60,12 @@ def main(config_f):
         config["World Width"],
         config["World Length"])
 
+    # Store POI states in file
+    joint_state = domain.get_jointstate()
+    with open(id +'_poi_states.yml', 'w') as file:
+        for i in joint_state['pois']:
+            file.write(str(i) + ',' + str(joint_state['pois'][i]['loc']) + "\n")
+
     agent_policies = {}
     for i in range(config["Number of Agents"]):
         agent_policies["agent_"+str(i)] = Evo_MLP(8, 2)
@@ -91,12 +97,6 @@ def main(config_f):
 
         # CCEA Evaluation
         CCEA(team, fitness)
-
-    # Store POI states in file
-    joint_state = domain.get_jointstate()
-    with open(id +'_poi_states.yml', 'w') as file:
-        for i in joint_state['pois']:
-            file.write(str(i) + ',' + str(joint_state['pois'][i]['loc']) + "\n")
 
 
 if __name__ == '__main__':
