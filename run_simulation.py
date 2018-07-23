@@ -47,6 +47,8 @@ def main(config_f):
         config = yaml.load(f)
     print()
     print(config_f)
+    with open(id + '_global_reward.yml', 'a') as file:
+        file.write(config_f + "\n")
 
     # Initialize the rover domain.
     domain = RoverDomain(
@@ -69,7 +71,6 @@ def main(config_f):
         config["Observation Radius"],
         config["Minimum Distance"])
 
-    g_reward = []
     # Boolean flag used to indicate when to save trajectories
     flag = False
 
@@ -83,8 +84,9 @@ def main(config_f):
         with open(id + '_agent_states.yml', 'a') as file:
             for x in trajectories:
                 file.write(x + "\n")
-
-        g_reward.append(str(fitness['agent_0']))
+        # Store the global reward in a file
+        with open(id + '_global_reward.yml', 'a') as file:
+            file.write(str(fitness['agent_0']) + "\n")
         print(fitness['agent_0'])
 
         # CCEA Evaluation
@@ -95,11 +97,7 @@ def main(config_f):
     with open(id +'_poi_states.yml', 'w') as file:
         for i in joint_state['pois']:
             file.write(str(i) + ',' + str(joint_state['pois'][i]['loc']) + "\n")
-    # Store the global reward in a file
-    with open(id +'_global_reward.yml', 'w') as file:
-        file.write(config_f + "\n")
-        for x in g_reward:
-            file.write(x + "\n")
+
 
 if __name__ == '__main__':
     # When ran through command line and no specific file is indicated, use default configuration file
