@@ -14,11 +14,6 @@ def EvaluateTeam(team, domain, reward, steps, flag):
         # Get States from Rover Doman
         joint_state = domain.get_jointstate()
 
-        if flag is True:
-            # Store trajectories
-            for i in joint_state['agents']:
-                states.append(str(i) + ', ' + str(joint_state['agents'][i]['loc'][0]) + ', ' + str(joint_state['agents'][i]['loc'][1]) + ', ' + str(joint_state['agents'][i]['theta']))
-
         # Get the actions from the team
         actions = team.get_jointaction(joint_state)
 
@@ -28,6 +23,12 @@ def EvaluateTeam(team, domain, reward, steps, flag):
         # Update the joint state
         joint_state = domain.get_jointstate()
         reward.record_history(joint_state)
+
+        if flag is True:
+            # Store trajectories
+            for i in joint_state['agents']:
+                states.append(str(i) + ', ' + str(joint_state['agents'][i]['loc'][0]) + ', ' + str(joint_state['agents'][i]['loc'][1]) + ', ' + str(joint_state['agents'][i]['theta']))
+
 
     # Compute the Global Reward
     reward_G = reward.calculate_reward()
@@ -45,6 +46,7 @@ def main(config_f):
         config_f = "config.yml"
     with open(config_f, 'r') as f:
         config = yaml.load(f)
+    # Print config file name to terminal and save in file
     print()
     print(config_f)
     with open(id + '_global_reward.yml', 'a') as file:
@@ -60,7 +62,7 @@ def main(config_f):
         config["World Width"],
         config["World Length"])
 
-    # Store POI states in file
+    # Store POI states in a file
     joint_state = domain.get_jointstate()
     with open(id +'_poi_states.yml', 'w') as file:
         for i in joint_state['pois']:
@@ -83,7 +85,6 @@ def main(config_f):
     for generation in range(config["Epochs"]):
         if generation > 9989:
             flag = True
-
         team, domain, fitness, trajectories = EvaluateTeam(team, domain, global_reward, config["Steps"], flag)
 
         # Store trajectories in a file
