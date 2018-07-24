@@ -83,7 +83,7 @@ def main(config_f):
     flag = False
 
     for generation in range(config["Epochs"]):
-        if generation > 9989:
+        if generation > 989:
             flag = True
         team, domain, fitness, trajectories = EvaluateTeam(team, domain, global_reward, config["Steps"], flag)
 
